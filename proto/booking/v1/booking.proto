@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package booking.v1;
+
+option go_package = "cloudbee/proto/booking/v1;bookingpb";
+
+// train passenger
+message User {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+}
+
+// Seat represents a seat allocation in the train
+message Seat {
+  string section = 1;  // A or B
+  int32 number = 2;
+}
+
+// Ticket
+message Ticket {
+  string from = 1;
+  string to = 2;
+  User user = 3;
+  double price = 4;
+  Seat seat = 5;
+}
+
+message PurchaseTicketRequest {
+  User user = 1;
+}
+
+message PurchaseTicketResponse {
+  Ticket ticket = 1;
+}
+
+message GetReceiptRequest {
+  string email = 1;
+}
+
+message GetReceiptResponse {
+  Ticket ticket = 1;
+}
+
+message GetSectionUsersRequest {
+  string section = 1;  // A or B
+}
+
+message GetSectionUsersResponse {
+  message UserSeat {
+    User user = 1;
+    Seat seat = 2;
+  }
+  repeated UserSeat user_seats = 1;
+}
+
+message RemoveUserRequest {
+  string email = 1;
+}
+
+message RemoveUserResponse {
+  bool success = 1;
+}
+
+message ModifySeatRequest {
+  string email = 1;
+  Seat new_seat = 2;
+}
+
+message ModifySeatResponse {
+  Ticket updated_ticket = 1;
+}
+
+message GetStatResponse {
+  repeated User user = 1;
+  repeated Seat seat = 2;
+  repeated Ticket ticket = 3;
+}
+message GetStatRequest {}
+
+service BookingService {
+  rpc PurchaseTicket(PurchaseTicketRequest) returns (PurchaseTicketResponse) {}
+
+  rpc GetReceipt(GetReceiptRequest) returns (GetReceiptResponse) {}
+
+  rpc GetSectionUsers(GetSectionUsersRequest) returns (GetSectionUsersResponse) {}
+
+  rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse) {}
+
+  rpc ModifySeat(ModifySeatRequest) returns (ModifySeatResponse) {}
+
+  // Get the Database view of the train
+  rpc GetStat(GetStatRequest) returns (GetStatResponse) {}
+}
